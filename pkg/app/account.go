@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 
@@ -11,7 +12,7 @@ import (
 	"Epam_final/pkg/front"
 )
 
-//CreateAccountHandler create new account
+// CreateAccountHandler create new account
 func (a *Api) CreateAccountHandler(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -20,18 +21,27 @@ func (a *Api) CreateAccountHandler(c *gin.Context) {
 	}
 
 	row := &models.Account{
-		Acc:       genAccNumber(),
-		UserID:    id,
-		AccStatus: true,
+		Acc:    genAccNumber(),
+		UserID: id,
 	}
 	if err := a.accountRepo.Create(row); err != nil {
 		c.JSON(http.StatusInternalServerError, fmt.Errorf("can't create account: %w", err))
 		return
 	}
 	c.JSON(http.StatusOK, makeAccountRes(row))
+
+	log := &models.Log{
+		UserID:  row.UserID,
+		Massage: "create account",
+		Date:    time.Time{},
+	}
+	err = a.logRepo.Create(log)
+	if err != nil {
+		fmt.Errorf("create log: %w", err)
+	}
 }
 
-//ListAccountHandler  show all accounts
+// ListAccountHandler  show all accounts
 func (a *Api) ListAccountHandler(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -44,7 +54,7 @@ func (a *Api) ListAccountHandler(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, fmt.Errorf("can't show account list: %w", err))
 		return
 	}
-	resp := make([]front.AccountRes, len(rows))
+	resp := make([]front.AccountRes, 0, len(rows))
 	for _, r := range rows {
 		resp = append(resp, *makeAccountRes(&r))
 	}
@@ -68,11 +78,11 @@ func makeAccountRes(row *models.Account) *front.AccountRes {
 		})
 	}
 	res.UserRequest = make([]front.UserRequestRes, 0, len(row.UserRequest))
-	for _, unlockTable := range row.UserRequest {
+	for _, userRequest := range row.UserRequest {
 		res.UserRequest = append(res.UserRequest, front.UserRequestRes{
-			ID:     unlockTable.ID,
-			AccID:  unlockTable.AccID,
-			Status: unlockTable.Status,
+			ID:     userRequest.ID,
+			AccID:  userRequest.AccID,
+			Status: userRequest.Status,
 		})
 	}
 	res.Payments = make([]front.PaymentsRes, 0, len(row.Payments))

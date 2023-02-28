@@ -2,7 +2,6 @@ package repository
 
 import (
 	"fmt"
-
 	"gorm.io/gorm"
 
 	"Epam_final/pkg/db/models"
@@ -28,10 +27,10 @@ func (r *UserRepo) Create(row *models.User) error {
 func (r *UserRepo) Get(id int64) (*models.User, error) {
 	res := &models.User{}
 	err := r.db.Model(res).
-		Preload("accounts").
-		Preload("logs").
+		Preload("Accounts").Preload("Accounts.Cards").
+		Preload("Logs").
 		Where("id = ?", id).
-		Scan(res).Error
+		Find(res).Error
 	if err != nil {
 		return nil, fmt.Errorf("repository get user: %w", err)
 	}
@@ -47,5 +46,14 @@ func (r *UserRepo) Update(row *models.User) error {
 		return fmt.Errorf("repository update user: %w", err)
 	}
 
+	return nil
+}
+
+func (r UserRepo) Delete(id int64) error {
+	res := &models.User{}
+	err := r.db.Unscoped().Delete(&res, id)
+	if err != nil {
+		return fmt.Errorf("delete user: %v", err)
+	}
 	return nil
 }

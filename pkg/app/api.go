@@ -5,10 +5,12 @@ import (
 	"gorm.io/gorm"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 
 	"Epam_final/pkg/db/repository"
+	"Epam_final/pkg/middleware"
 )
 
 type Api struct {
@@ -38,7 +40,12 @@ func New(conn *gorm.DB) (*Api, error) {
 		cardRepo:        cardRepo,
 	}
 	srv := gin.Default()
+	srv.Use(middleware.DefaultStructuredLogger())
+	gin.DefaultWriter = os.Stdout
+
+	srv.POST("/users", api.CreateUserHandler)
 	srv.GET("/users/:id", api.GetUserHandler)
+	srv.DELETE("/users/:id", api.DeleteUserHandler)
 
 	srv.PUT("/admin/users/:id/block", api.BlockUserHandler)
 	srv.PUT("/admin/users/:id/unblock", api.UnblockUserHandler)
@@ -50,8 +57,10 @@ func New(conn *gorm.DB) (*Api, error) {
 	srv.POST("/accounts/:id/card", api.CreateCardHandler)
 	srv.GET("/card/:id", api.GetCardHandler)
 
-	srv.POST("/accounts/:id/payments", api.CreatePaymentHandler)
+	srv.POST("/payments", api.CreatePaymentHandler)
 	srv.GET("/accounts/:id/payments", api.ListPaymentsHandler)
+
+	srv.POST("/userRequest", api.CreateUserRequestHandler)
 
 	api.router = srv
 
@@ -60,7 +69,7 @@ func New(conn *gorm.DB) (*Api, error) {
 
 func (a *Api) Run(ctx context.Context, port string) error {
 	srv := &http.Server{
-		Addr:    port,
+		Addr:    ":" + port,
 		Handler: a.router,
 	}
 

@@ -7,10 +7,10 @@ type Account struct {
 	AccStatus bool   `gorm:"column:acc_status;type:bool;default:true;not null"`
 	Amount    int64  `gorm:"column:amount;type:int;default:0"`
 
-	Cards       []Card        `gorm:"foreignKey:acc_id;references:id"`
-	UserRequest []UserRequest `gorm:"foreignKey:acc_id;references:id"`
-	Payments    []Payments    `gorm:"foreignKey:acc_id;references:id"`
-	User        *User         `gorm:"foreignKey:user_id"`
+	Cards       []Card        `gorm:"foreignKey:acc_id;references:id;constraint:OnDelete:CASCADE;"`
+	UserRequest []UserRequest `gorm:"foreignKey:acc_id;references:id;constraint:OnDelete:CASCADE;"`
+	Payments    []Payments    `gorm:"foreignKey:acc_id;references:id;constraint:OnDelete:CASCADE;"`
+	User        *User         `gorm:"foreignKey:user_id;constraint:OnDelete:CASCADE;"`
 }
 
 type AccountsRepository interface {

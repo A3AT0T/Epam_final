@@ -1,7 +1,7 @@
 package models
 
 type User struct {
-	ID      int64  `gorm:"column:id;type:int;primaryKey;autoincrement"`
+	ID      int64  `gorm:"column:id;type:int;autoincrement;primaryKey"`
 	Name    string `gorm:"column:name;type:string;not null"`
 	Surname string `gorm:"column:surname;type:string;not null"`
 	Email   string `gorm:"column:email;type:string;not null;unique"`
@@ -9,12 +9,13 @@ type User struct {
 	Status  string `gorm:"column:status;type:string;not null;default:active"`
 	IsAdmin bool   `gorm:"column:is_admin;type:bool;not null;default:false"`
 
-	Accounts []Account `gorm:"foreignKey:user_id;references:id"`
-	Logs     []Log     `gorm:"foreignKey:user_id;references:id"`
+	Accounts []Account `gorm:"foreignKey:user_id;references:id;constraint:OnDelete:CASCADE;"`
+	Logs     []Log     `gorm:"foreignKey:user_id;references:id;constraint:OnDelete:CASCADE;"`
 }
 
 type UserRepository interface {
 	Create(u *User) error
 	Get(id int64) (*User, error)
 	Update(u *User) error
+	Delete(id int64) error
 }

@@ -28,9 +28,9 @@ func (r *CardRepo) Create(row *models.Card) error {
 func (r *CardRepo) Get(id int64) (*models.Card, error) {
 	res := &models.Card{}
 	err := r.db.Model(res).
-		Preload("account").
+		Preload("Account").
 		Where("id = ?", id).
-		Scan(res).Error
+		Find(res).Error
 	if err != nil {
 		return nil, fmt.Errorf("repository get card: %w", err)
 	}
@@ -41,9 +41,9 @@ func (r *CardRepo) Get(id int64) (*models.Card, error) {
 func (r *CardRepo) List(id int64) ([]models.Card, error) {
 	rows := []models.Card{}
 	err := r.db.Model(rows).
-		Preload("account").
+		Preload("Account").
 		Where("user_id = ?", id).
-		Scan(rows).Error
+		Find(rows).Error
 	if err != nil {
 		return nil, fmt.Errorf("repository account list : %w", err)
 	}

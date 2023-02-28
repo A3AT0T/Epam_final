@@ -14,12 +14,12 @@ requirements done:
 - documentation
 - error handling
 - graceful shutdown
+- testing
+- containerization
+- logs
 
 TBD
 
 - authentication, roles
 - pagination, sorting
-- containerization
-- testing
 - transactions
-- logs

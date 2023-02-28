@@ -28,12 +28,12 @@ func (r *AccountRepo) Create(row *models.Account) error {
 func (r *AccountRepo) Get(id int64) (*models.Account, error) {
 	res := &models.Account{}
 	err := r.db.Model(res).
-		Preload("cards").
-		Preload("unlock_table").
-		Preload("payments").
-		Preload("user").
+		Preload("Cards").
+		Preload("UserRequest").
+		Preload("Payments").
+		Preload("User").
 		Where("id = ?", id).
-		Scan(res).Error
+		Find(res).Error
 	if err != nil {
 		return nil, fmt.Errorf("repository get account: %w", err)
 	}
@@ -42,14 +42,14 @@ func (r *AccountRepo) Get(id int64) (*models.Account, error) {
 }
 
 func (r *AccountRepo) List(id int64) ([]models.Account, error) {
-	var rows []models.Account
-	err := r.db.Model(rows).
-		Preload("cards").
-		Preload("unlock_table").
-		Preload("payments").
-		Preload("user").
+	rows := []models.Account{}
+	err := r.db.Model(&rows).
+		Preload("Cards").
+		Preload("UserRequest").
+		Preload("Payments").
+		Preload("User").
 		Where("user_id = ?", id).
-		Scan(rows).Error
+		Find(&rows).Error
 	if err != nil {
 		return nil, fmt.Errorf("repository accounts list : %w", err)
 	}

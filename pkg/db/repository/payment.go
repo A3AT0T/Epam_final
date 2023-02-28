@@ -2,7 +2,6 @@ package repository
 
 import (
 	"fmt"
-
 	"gorm.io/gorm"
 
 	"Epam_final/pkg/db/models"
@@ -28,9 +27,9 @@ func (r *PaymentRepo) Create(row *models.Payments) error {
 func (r *PaymentRepo) Get(id int64) (*models.Payments, error) {
 	res := &models.Payments{}
 	err := r.db.Model(res).
-		Preload("account").
+		Preload("Account").
 		Where("id = ?", id).
-		Scan(res).Error
+		Find(res).Error
 	if err != nil {
 		return nil, fmt.Errorf("repository get payment: %w", err)
 	}
@@ -40,9 +39,9 @@ func (r *PaymentRepo) Get(id int64) (*models.Payments, error) {
 
 func (r *PaymentRepo) Update(row *models.Payments) error {
 	err := r.db.Updates(&row).
-		UpdateColumns("amount").
-		UpdateColumns("status").
-		UpdateColumns("date").
+		UpdateColumns("Amount").
+		UpdateColumns("Status").
+		UpdateColumns("Date").
 		Where("user_id = ?", row).Error
 	if err != nil {
 		return fmt.Errorf("repository update payment: %w", err)
@@ -51,11 +50,11 @@ func (r *PaymentRepo) Update(row *models.Payments) error {
 	return nil
 }
 func (r *PaymentRepo) List(id int64) ([]models.Payments, error) {
-	var rows []models.Payments
-	err := r.db.Model(rows).
-		Preload("account").
-		Where("id = ?", id).
-		Scan(rows).Error
+	rows := []models.Payments{}
+	err := r.db.Model(&rows).
+		Preload("Account").
+		Where("acc_id = ?", id).
+		Find(&rows).Error
 	if err != nil {
 		return nil, fmt.Errorf("repository accounts list : %w", err)
 	}

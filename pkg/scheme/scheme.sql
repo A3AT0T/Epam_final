@@ -9,6 +9,15 @@ CREATE TABLE user
     is_admin BOOLEAN             NOT NULL DEFAULT FALSE
 );
 
+CREATE TABLE cards
+(
+    id      serial PRIMARY KEY,
+    card_id VARCHAR(16) NOT NULL,
+    acc_id  INT NO NULL,
+    FOREIGN KEY (acc_id) REFERENCES accounts (id)
+
+);
+
 CREATE TABLE accounts
 (
     id         serial PRIMARY KEY,
@@ -18,15 +27,6 @@ CREATE TABLE accounts
     acc_status BOOLEAN DEFAULT FALSE,
     NOT NULL,
     amount     INT     DEFAULT 0
-);
-
-CREATE TABLE cards
-(
-    id      serial PRIMARY KEY,
-    card_id VARCHAR(16) NOT NULL,
-    acc_id  INT NO NULL,
-    FOREIGN KEY (acc_id) REFERENCES accounts (id)
-
 );
 
 CREATE TABLE payments
